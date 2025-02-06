@@ -1,0 +1,39 @@
+name: Build and Deploy to Google Play
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.1'
+
+    - name: Increment build number
+      run: |
+        chmod +x increment_build.sh
+        ./increment_build.sh
+
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Build App Bundle
+      run: flutter build appbundle --release
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release.aab
+        path: build/app/outputs/bundle/release/app-release.aab
+
+    # Opcional: Agregar pasos para desplegar automáticamente a Google Play
+    # Esto requiere configurar secretos y permisos adecuados

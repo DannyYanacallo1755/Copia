@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "ourshop_ecommerce (debug)",
+            "request": "launch",
+            "flutterMode": "debug",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "ourshop_ecommerce (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "ourshop_ecommerce (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "program": "lib/main.dart"
+        }
+    ]
+}

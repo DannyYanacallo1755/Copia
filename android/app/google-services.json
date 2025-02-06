@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "544549440537",
+    "project_id": "ourshop-fea4a",
+    "storage_bucket": "ourshop-fea4a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544549440537:android:d5c4f6c74e932e5a43ee88",
+        "android_client_info": {
+          "package_name": "szfibersystem.ourshop.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "544549440537-4nspsbsr14406i9ip18n0s84bv6osp4d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "szfibersystem.ourshop.com",
+            "certificate_hash": "a23960b71b2c65e03f1d5e38e2473ef22f20925f"
+          }
+        },
+        {
+          "client_id": "544549440537-b9o00th7r83p1ehre9ev1t9isp9m0brg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "szfibersystem.ourshop.com",
+            "certificate_hash": "94917b3c221838c5ab6337024954c99ac5f2ba0c"
+          }
+        },
+        {
+          "client_id": "544549440537-utlmhh579uvfkskg2pqm4fammodj0689.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRIC2zDjrHoKZkKK2x1ehaDij8Va0Lrig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "544549440537-8sbof4l0f4vogs5d2um3nar25tjhn42b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "544549440537-aloalfq5lm2ij33pk3kroq89c36biam4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "szfibersystem.ourshopEcommerce.ec"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544549440537:android:e8a48b55e76ab58843ee88",
+        "android_client_info": {
+          "package_name": "szfibersystem.ourshop.shop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "544549440537-utlmhh579uvfkskg2pqm4fammodj0689.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRIC2zDjrHoKZkKK2x1ehaDij8Va0Lrig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "544549440537-8sbof4l0f4vogs5d2um3nar25tjhn42b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "544549440537-aloalfq5lm2ij33pk3kroq89c36biam4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "szfibersystem.ourshopEcommerce.ec"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
