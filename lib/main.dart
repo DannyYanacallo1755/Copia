@@ -9,26 +9,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+/*Correcion para que siempre al iniciar la aplicacion se muestre la seccion idioma y moneda*/
+  //LIMPIAR CACHE AL INICIAR LA APLICACIÓN
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear(); // Borra todos los datos guardados, incluyendo idioma y moneda
+
   WakelockPlus.enable();
   const bool isProduction = bool.fromEnvironment('dart.vm.product');
   await dotenv.load(fileName: isProduction ? ".env.prod" : ".env.dev");
   Bloc.observer = Observable();
   await initializeServiceLocator();
-  //final webSocketService = locator<WebSocketService>();
-  //webSocketService.connect();
 
-  /* webSocketService.messages.listen(
-    (message) {
-      print('Mensaje recibido en el main: $message');
-    },
-    onError: (error) {
-      print('Error recibido en el main: $error');
-    },
-    onDone: () {
-      print('Conexión WebSocket cerrada');
-    },
-  );
- */
   runApp(MultiBlocProvider(providers: [
     BlocProvider(create: (_) => locator<SettingsBloc>()),
     BlocProvider(create: (_) => locator<RolesBloc>()),
@@ -42,6 +33,7 @@ void main() async {
     ChangeNotifierProvider(create: (_) => OrderProvider()),
   ], child: const MyApp()));
 }
+/*------------------------------------------------ */
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

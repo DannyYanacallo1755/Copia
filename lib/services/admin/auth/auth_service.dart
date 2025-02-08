@@ -5,7 +5,11 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+
+/*Agregado*/
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter/foundation.dart'; 
+
 
 class AuthService {
   final Dio dio;
@@ -14,97 +18,10 @@ class AuthService {
 
   AuthService({required this.dio});
 
-  Future<dynamic> loginApple(Map<String, dynamic> data) async {
-    try {
-      // Obtén las credenciales de Apple
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      // Prepara los datos para enviar al backend
-      final requestBody = jsonEncode({
-        "data": {
-          "user": {
-            "uid": credential.userIdentifier, // Identificador único de Apple
-            "email": credential.email, // Correo electrónico (si está disponible)
-            "displayName":
-                "${credential.givenName} ${credential.familyName}", // Nombre completo
-            "isAnonymous": false,
-            "photoURL": null, // Apple no proporciona una URL de foto
-            "providerData": [
-              {
-                "providerId": "apple.com",
-                "uid": credential.userIdentifier,
-                "displayName":
-                    "${credential.givenName} ${credential.familyName}",
-                "email": credential.email,
-                "phoneNumber": null,
-                "photoURL": null
-              }
-            ],
-            "stsTokenManager": {
-              "refreshToken": credential.authorizationCode,
-              "accessToken": credential.identityToken,
-              "expirationTime": DateTime.now()
-                  .add(Duration(days: 30))
-                  .millisecondsSinceEpoch, // Simula una expiración
-            },
-            "createdAt": DateTime.now().millisecondsSinceEpoch,
-            "lastLoginAt": DateTime.now().millisecondsSinceEpoch,
-            "apiKey": "AIzaSyCRIC2zDjrHoKZkKK2x1ehaDij8Va0Lrig", // Clave de API de Firebase
-            "appName": "APP"
-          },
-          "providerId": "apple.com",
-          "operationType": "signIn",
-          "_tokenResponse": {
-            "federatedId": "https://appleid.apple.com/${credential.userIdentifier}",
-            "providerId": "apple.com",
-            "emailVerified": credential.email != null,
-            "firstName": credential.givenName,
-            "fullName": "${credential.givenName} ${credential.familyName}",
-            "lastName": credential.familyName,
-            "photoUrl": null,
-            "localId": credential.userIdentifier,
-            "displayName": "${credential.givenName} ${credential.familyName}",
-            "idToken": credential.identityToken,
-            "context": "",
-            "oauthAccessToken": credential.authorizationCode,
-          }
-        }
-      });
-
-      // Envía los datos al backend
-      final response = await http.post(
-        Uri.parse('${dotenv.env['ADMIN_API_URL']}/auth/apple-login'),
-        headers: {'Content-Type': 'application/json'},
-        body: requestBody,
-      );
-
-      if (response.statusCode == 200) {
-        var responseBody = json.decode(response.body);
-        final auth = Authentication.fromJson(responseBody);
-        locator<Preferences>().saveData('token', auth.data.token);
-        locator<Preferences>().saveData('refreshToken', auth.data.refreshToken);
-        final LoggedUser loggedUser =
-            LoggedUser.fromJson(auth.data.getTokenPayload);
-        return loggedUser;
-      } else {
-        print('Error en el login con Apple: ${response.body}');
-        throw Exception('Error en el login con Apple');
-      }
-    } catch (e) {
-      print('Se produjo un error al autenticarse con Apple: $e');
-      throw Exception('Error al autenticarse con Apple');
-    }
-  }
-
-
   Future<dynamic> login(Auth data) async {
     try {
-      final response = await dio.post('/auth/login', data: data.login());
+      final response = await dio.post('/auth/login',
+          data: data.login());
       final auth = Authentication.fromJson(response.data);
       locator<Preferences>().saveData('token', auth.data.token);
       locator<Preferences>().saveData('refreshToken', auth.data.refreshToken);
@@ -269,8 +186,11 @@ class AuthService {
           }
         }
       }
-    } catch (e) {
-      print('Se produjo un error al authenticarse $e');
+    } 
+    catch (e) {
+      if (kDebugMode) {
+        print('Se produjo un error al authenticarse $e');
+      }
     }
     /*  try {
       final response = await dio.post('/auth/firebase-login', data: data());
@@ -286,6 +206,86 @@ class AuthService {
     } */
   }
 
+
+
+/*Para rl inicio de sesion con apple */
+
+Future<dynamic> loginApple() async {
+  try {
+    // Verifica si es un dispositivo iOS o macOS
+    if (!kIsWeb && (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS)) {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final authCredential = OAuthProvider("apple.com").credential(
+        idToken: credential.identityToken,
+        accessToken: credential.authorizationCode,
+      );
+
+      final userCredential = await _auth.signInWithCredential(authCredential);
+      final user = userCredential.user;
+
+      if (user != null) {
+        final refreshToken = await user.getIdToken(true);
+        final requestBody = jsonEncode({
+          "data": {
+            "user": {
+              "uid": user.uid,
+              "emailVerified": user.emailVerified,
+              "displayName": user.displayName,
+              "isAnonymous": user.isAnonymous,
+              "photoURL": user.photoURL,
+              "providerData": user.providerData.map((provider) {
+                return {
+                  "providerId": provider.providerId,
+                  "uid": provider.uid,
+                  "displayName": provider.displayName,
+                  "email": provider.email,
+                  "phoneNumber": provider.phoneNumber,
+                  "photoURL": provider.photoURL
+                };
+              }).toList(),
+            },
+            "stsTokenManager": {
+              "refreshToken": refreshToken,
+              "idToken": credential.identityToken,
+              "accessToken": credential.authorizationCode,
+            },
+            "createdAt": user.metadata.creationTime?.millisecondsSinceEpoch,
+            "lastLoginAt": user.metadata.lastSignInTime?.millisecondsSinceEpoch,
+          },
+          "providerId": "apple.com",
+          "operationType": "signIn",
+        });
+
+        final response = await http.post(
+          Uri.parse('${dotenv.env['ADMIN_API_URL']}/auth/firebase-login'),
+          headers: {'Content-Type': 'application/json'},
+          body: requestBody,
+        );
+
+        if (response.statusCode == 200) {
+          var responseBody = json.decode(response.body);
+          final auth = Authentication.fromJson(responseBody);
+          locator<Preferences>().saveData('token', auth.data.token);
+          locator<Preferences>().saveData('refreshToken', auth.data.refreshToken);
+          final LoggedUser loggedUser = LoggedUser.fromJson(auth.data.getTokenPayload);
+          return loggedUser;
+        }
+      }
+    } else {
+      throw Exception("Apple Sign In solo funciona en iOS o macOS");
+    }
+  } catch (e) {
+    print('Error en el inicio de sesión con Apple: $e');
+    return null;
+  }
+}
+/* ------------------------- */
   Future<dynamic> registerGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -369,7 +369,6 @@ class AuthService {
             return loggedUser;
           } else {
             print('Error en el login: ${response.body}');
-            // Aquí puedes manejar el error o crear un nuevo usuario si es necesario
           }
         }
       }
@@ -390,16 +389,42 @@ class AuthService {
     } */
   }
 
-  Future<dynamic> register(NewUser data) async {
+  Future<dynamic> register1(NewUser data) async {
     try {
-      final response =
-          await dio.post('/auth/register', data: data.newUserToJson());
+      final response = await dio.post( 
+          '/auth/register', 
+          data: data.newUserToJson()
+      );
       final user = UserResponse.fromJson(response.data);
       return user.data;
     } on DioException catch (e) {
       ErrorHandler(e);
     }
   }
+
+  Future<dynamic> register(NewUser data) async {
+  try {
+    // Obtener la URL base y el Referer desde el .env
+    final String? envUrl = dotenv.env['ENV_URL'];
+
+    final response = await dio.post(
+      '/auth/register', // Se asegura de usar BASE_URL
+      data: data.newUserToJson(),
+      options: Options(
+        headers: {
+          'Referer': envUrl ?? '', // Si REFERER está vacío, lo deja como string vacío
+          'Content-Type': 'application/json', // Asegura que el tipo de contenido sea JSON
+        },
+      ),
+    );
+
+    final user = UserResponse.fromJson(response.data);
+    return user.data;
+  } on DioException catch (e) {
+    log("Error en register: ${e.response?.data}");
+    ErrorHandler(e);
+  }
+}
 
   Future<void> refreshToken(String refreshToken) async {
     try {

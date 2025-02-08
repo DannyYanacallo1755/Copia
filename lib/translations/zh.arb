@@ -266,8 +266,10 @@
     "updated_status":"更新訂單",
     "error_updated_status":"更新訂單時出錯",
     "change_your_currency": "更改貨幣",
-    "select_language_currency":"您必須選擇語言和貨幣"
-
+    "select_language_currency":"您必須選擇語言和貨幣",
+    "login_apple": "使用 Apple 登录",
+    "login_failed": "使用 Apple 登录时出错",
+    "remember_choice": "recordar"
 
 
 

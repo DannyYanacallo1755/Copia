@@ -31,11 +31,17 @@ class AccountService {
         msg: translations.delete_account_success,
         gravity: ToastGravity.BOTTOM,
       );
-      await preferences.clear();
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const SignInPage()),
+      await preferences.clear().then(
+        (_) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const SignInPage()),
+            (Route<dynamic> route) => false, // Esto eliminará todas las pantallas anteriores.
+          );
+        },
       );
+
+      
       return data;
     } on DioException catch (e) {
       log('deleteAccount -> ${e.response?.data}');

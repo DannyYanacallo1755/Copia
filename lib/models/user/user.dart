@@ -155,7 +155,7 @@ class NewUser extends Equatable {
 
   Map<String, dynamic> newUserToJson() => {
     "user": {
-        "username":username,
+        "username":email,
         "email":email,
         "password":password,
         "name":name,

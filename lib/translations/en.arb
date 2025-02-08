@@ -263,8 +263,10 @@
     "error_updated_status":"Error updating order",
     "change_your_currency": "Change currency",
     "select_language_currency":"You must select language and currency",
-    "user_no_exist_description": "提供的電子郵件地址的使用者不存在，請嘗試使用其他電子郵件地址"
-
+    "user_no_exist_description": "提供的電子郵件地址的使用者不存在，請嘗試使用其他電子郵件地址",
+    "login_apple": "Sign in with Apple",
+    "login_failed": "Error when signing in with apple",
+    "remember_choice": "recordar"
 
 
 

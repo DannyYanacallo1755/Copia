@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:ourshop_ecommerce/models/available_currency.dart';
-
 import '../pages.dart';
 
 class SubCategoryPage extends StatefulWidget {
@@ -15,15 +13,19 @@ class SubCategoryPage extends StatefulWidget {
 class _SubCategoryPageState extends State<SubCategoryPage> {
   late ScrollController _scrollController;
   Currency? currency;
+
+/*Corregido*/
   @override
   void initState() {
     super.initState();
-    currency = getCurrency();
-
     _scrollController = ScrollController()..addListener(listener);
-
-    getCurrency();
+    getCurrency().then((curr) {
+      setState(() {
+        currency = curr;
+      });
+    });
   }
+/*-----------------------------*/
 
   void listener() {
     final double threshold = _scrollController.position.maxScrollExtent * 0.05;
@@ -35,13 +37,23 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
     }
   }
 
-  getCurrency() async {
+  /*PUNTO DE INICIO */
+/*-------Agregado-------*/
+  Future<Currency?> getCurrency() async {
     late SharedPreferences preferences;
     preferences = await SharedPreferences.getInstance();
-    var currencies = preferences.getString('currency')!;
-    Currency currencys = Currency.fromJson(jsonDecode(currencies));
-    return currencys;
+    var currencies = preferences.getString('currency');
+    if (currencies == null) return null;
+    return Currency.fromJson(jsonDecode(currencies));
   }
+
+ // getCurrency() async {
+   // late SharedPreferences preferences;
+    //preferences = await SharedPreferences.getInstance();
+    //var currencies = preferences.getString('currency')!;
+    //Currency currencys = Currency.fromJson(jsonDecode(currencies));
+    //return currencys;
+  //}
 
   void fetchData() {
     context.read<ProductsBloc>().add(AddSubCategoryProductsEvent(
@@ -116,7 +128,10 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                         onPressed: () {
                           if (state.selectedParentCategory ==
                               state.selectedSubCategory.parentCategoryId) {
-                            context.go('/home');
+                            if (mounted) {
+                                Navigator.pushReplacementNamed(context, '/home'); //Navegación más segura
+                              }
+
                             return;
                           }
                           context.read<ProductsBloc>().add(

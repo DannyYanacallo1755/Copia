@@ -60,6 +60,7 @@ class Currency extends Equatable {
       dollarPrice: json['latest_price']['dollarPrice'],
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
       'symbol': symbol,
@@ -73,6 +74,20 @@ class Currency extends Equatable {
         'dollarPrice': dollarPrice,
       },
     };
+  }
+
+  /// 🔹 Método para devolver una moneda por defecto (USD)
+  static Currency defaultCurrency() {
+    return const Currency(
+      symbol: "\$",
+      name: "US Dollar",
+      rounding: 0,
+      symbolNative: "\$",
+      isoCode: "USD",
+      decimalDigits: 2,
+      namePlural: "US dollars",
+      dollarPrice: 1.0, // 💲 Precio en dólares
+    );
   }
 
   @override

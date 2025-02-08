@@ -1,6 +1,8 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart'; // Importa el paquete para Apple Sign In
 import '../../pages.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -28,7 +30,7 @@ class _SignInPageState extends State<SignInPage> {
     context.read<CountryBloc>().add(const AddCountriesEvent());
     locator<Preferences>().saveLastVisitedPage('sign_in_page');
     _userController = TextEditingController(
-        text: locator<Preferences>().preferences['username'] ?? '');
+        text: locator<Preferences>().preferences['email'] ?? '');
     _passwordController = TextEditingController(
         text: locator<Preferences>().preferences['password'] ?? '');
     rememberMe = bool.parse(
@@ -44,42 +46,6 @@ class _SignInPageState extends State<SignInPage> {
     _passwordFocusNode.dispose();
   }
 
-  // Método para manejar el inicio de sesión con Apple
-  Future<void> _doAppleSignIn() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      // Aquí puedes manejar la credencial de Apple, por ejemplo, enviarla a tu backend
-      print(credential);
-
-      // Simula un inicio de sesión exitoso
-      context.read<UsersBloc>().add(LoginApple(data: {
-        'appleId': credential.userIdentifier,
-        'email': credential.email,
-        'fullName': credential.givenName,
-      }));
-
-    } catch (e) {
-      print(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al iniciar sesión con Apple: $e')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     ValueNotifier<bool> hasPasswordError = ValueNotifier(false);
@@ -87,6 +53,7 @@ class _SignInPageState extends State<SignInPage> {
     final ThemeData theme = Theme.of(context);
     final TextStyle inputValueStyle =
         theme.textTheme.bodyMedium!.copyWith(color: Colors.black);
+    final AppLocalizations translations = AppLocalizations.of(context)!;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -104,18 +71,18 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               children: [
                 Text.rich(TextSpan(
-                    text: 'Welcome to',
+                    text: translations.welcome_to,
                     style: theme.textTheme.titleMedium,
                     children: [
                       TextSpan(
-                          text: ' OurShop',
+                          text: translations.ourshop,
                           style: theme.textTheme.titleMedium
                               ?.copyWith(color: AppTheme.palette[800])),
                       TextSpan(
-                          text: ' E-Commerce',
+                          text: translations.e_commerce,
                           style: theme.textTheme.titleMedium),
                       TextSpan(
-                          text: ' App',
+                          text: translations.app,
                           style: theme.textTheme.titleMedium
                               ?.copyWith(color: AppTheme.palette[800])),
                     ])),
@@ -123,11 +90,11 @@ class _SignInPageState extends State<SignInPage> {
                   height: _space,
                 ),
                 Text.rich(TextSpan(
-                    text: 'Slogan 1',
+                    text: translations.slogan_1,
                     style: theme.textTheme.titleLarge,
                     children: [
                       TextSpan(
-                        text: ' Slogan 2',
+                        text: translations.slogan_2,
                         style: theme.textTheme.titleMedium,
                       ),
                     ])),
@@ -135,11 +102,11 @@ class _SignInPageState extends State<SignInPage> {
                   height: 10,
                 ),
                 Text.rich(TextSpan(
-                    text: 'Sign in to your account',
+                    text: translations.sing_in_your_account,
                     style: theme.textTheme.titleSmall,
                     children: [
                       TextSpan(
-                          text: ' to continue',
+                          text: ' ${translations.to} ${translations.continue_}',
                           style: theme.textTheme.titleSmall)
                     ])),
                 SizedBox(
@@ -165,8 +132,9 @@ class _SignInPageState extends State<SignInPage> {
                               name: "username",
                               cursorColor: _cursorColor,
                               decoration: InputDecoration(
-                                labelText: 'Username',
-                                hintText: 'Enter your username',
+                                labelText: translations.username,
+                                hintText: translations.placeholder(
+                                    translations.username.toLowerCase()),
                               ),
                               validator: FormBuilderValidators.compose([
                                 FormBuilderValidators.required(),
@@ -194,8 +162,9 @@ class _SignInPageState extends State<SignInPage> {
                                   name: "password",
                                   cursorColor: _cursorColor,
                                   decoration: InputDecoration(
-                                      labelText: 'Password',
-                                      hintText: 'Enter your password',
+                                      labelText: translations.password,
+                                      hintText: translations.placeholder(
+                                          translations.password.toLowerCase()),
                                       suffixIcon: IconButton(
                                         onPressed:
                                             state.status == UserStatus.loading
@@ -261,7 +230,7 @@ class _SignInPageState extends State<SignInPage> {
                                         },
                                         name: "remember_me",
                                         title: Text(
-                                          'Remember me',
+                                          translations.remember_me,
                                           style: theme.textTheme.bodySmall,
                                         ),
                                       ),
@@ -283,7 +252,8 @@ class _SignInPageState extends State<SignInPage> {
                                         !_isLoading
                                     ? const CircularProgressIndicator.adaptive()
                                     : Text(
-                                        'Sign in with Email',
+                                        translations.sign_in_with(
+                                            translations.email.toLowerCase()),
                                         style: theme.textTheme.bodyMedium
                                             ?.copyWith(color: Colors.white),
                                       ),
@@ -311,33 +281,31 @@ class _SignInPageState extends State<SignInPage> {
                                 label: _isLoading
                                     ? const Text("")
                                     : Text(
-                                        'Login with Google',
+                                        translations.login_google,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
                                 onPressed: _isLoading
                                     ? null
                                     : () async {
-                                        _doGoogleSignIn();
+                                        _doGoogleSignIn(translations);
                                       },
                               ),
                             ),
-                            // Botón de inicio de sesión con Apple
+                          /*Boton Iniciar Sesion Apple*/
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: Colors.black, // Color de Apple
+                                  backgroundColor: Colors.black,
                                 ),
                                 icon: _isLoading
                                     ? const SizedBox(
                                         width: 16,
                                         height: 16,
                                         child: CircularProgressIndicator(
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                  Colors.white),
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                           strokeWidth: 2.0,
                                         ),
                                       )
@@ -345,18 +313,22 @@ class _SignInPageState extends State<SignInPage> {
                                 label: _isLoading
                                     ? const Text("")
                                     : Text(
-                                        'Login with Apple',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
+                                        translations.login_apple,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
                                       ),
-                                onPressed: _isLoading ? null : _doAppleSignIn,
+                                onPressed: _isLoading
+                                    ? null
+                                    : () async {
+                                        _doAppleSignIn(translations);
+                                      },
                               ),
                             ),
+                              /*-----------*/
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Don\'t have an account?',
+                                  translations.dont_have_account,
                                   style: theme.textTheme.bodySmall,
                                 ),
                                 TextButton(
@@ -364,7 +336,7 @@ class _SignInPageState extends State<SignInPage> {
                                       ? null
                                       : () => context.push('/sign-up'),
                                   child: Text(
-                                    'Sign up',
+                                    translations.sign_up,
                                     style: theme.textTheme.bodySmall?.copyWith(
                                         color: AppTheme.palette[800],
                                         fontWeight: FontWeight.w600),
@@ -401,7 +373,7 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  void _doGoogleSignIn() {
+  void _doGoogleSignIn(translations) {
     setState(() {
       _isLoading = true;
     });
@@ -419,9 +391,52 @@ class _SignInPageState extends State<SignInPage> {
 
       if (currentState.status == UserStatus.error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('User does not exist')),
+          SnackBar(content: Text(translations.user_no_exist_description)),
         );
       }
     });
   }
+
+  /*inicio de sesion con apple */
+void _doAppleSignIn(AppLocalizations translations) async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    // Enviar credenciales al Bloc
+    context.read<UsersBloc>().add(LoginApple(data: {
+      'identityToken': credential.identityToken,
+      'authorizationCode': credential.authorizationCode,
+    }));
+
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      setState(() {
+        _isLoading = false;
+      });
+
+      final currentState = context.read<UsersBloc>().state;
+      if (currentState.status == UserStatus.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(translations.user_no_exist_description)),
+        );
+      }
+    });
+  } catch (error) {
+    setState(() {
+      _isLoading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("${translations.login_failed}: $error")),
+    );
+  }
+}
+
 }

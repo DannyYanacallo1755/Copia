@@ -12,7 +12,8 @@ class ProductCard extends StatelessWidget {
       required this.product,
       required this.theme,
       required this.translations,
-      required this.currency});
+      required this.currency
+      });
 
   final double height;
   final double width;

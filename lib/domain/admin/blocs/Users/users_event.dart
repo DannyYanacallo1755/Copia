@@ -8,6 +8,7 @@ sealed class UsersEvent extends Equatable {
 }
 
 class Login extends UsersEvent {
+  // final LoggedUser loggedUser;
   final dynamic data;
   const Login({required this.data});
 
@@ -18,15 +19,6 @@ class Login extends UsersEvent {
 class LoginGoogle extends UsersEvent {
   final Map<String, dynamic> data;
   const LoginGoogle({required this.data});
-
-  @override
-  List<Object> get props => [data];
-}
-
-// Agrega el evento LoginApple
-class LoginApple extends UsersEvent {
-  final Map<String, dynamic> data;
-  const LoginApple({required this.data});
 
   @override
   List<Object> get props => [data];
@@ -77,6 +69,16 @@ class AddSelectedShippingAddressEvent extends UsersEvent {
   @override
   List<Object> get props => [shippingAddress];
 }
+/*Añadido inicio de sesion con Apple */
+class LoginApple extends UsersEvent {
+  final Map<String, dynamic> data;
+  const LoginApple({required this.data});
+
+  @override
+  List<Object> get props => [data];
+}
+
+
 
 class MakeStripePaymentEvent extends UsersEvent {
   final StripePayment stripePayment;

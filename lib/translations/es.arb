@@ -264,9 +264,10 @@
     "error_updated_status":"Error al actualizar orden",
     "change_your_currency": "Cambiar moneda",
     "select_language_currency":"Debe seleccionar idioma y moneda",
-    "user_no_exist_description": "El usuario con el correo proporcionado no existe, por favor intente con otro"
-
-
+    "user_no_exist_description": "El usuario con el correo proporcionado no existe, por favor intente con otro",
+    "login_apple": "Iniciar Sesion con Apple",
+    "login_failed": "Error al iniciar sesion con Apple",
+    "remember_choice": "recordar"
 
 
 }

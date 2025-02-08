@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ourshop_ecommerce/ui/pages/pages.dart';
 
@@ -46,7 +45,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _codeController.dispose();
     _companyController.dispose();
 
-    _usernameFocusNode.dispose();
+    //_usernameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     _confirmPasswordFocusNode.dispose();
@@ -61,6 +60,9 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    final TextEditingController _searchController = TextEditingController();
+    late ValueNotifier<List<Country>> _filteredCountries;
+
     final TextTheme textS = Theme.of(context).textTheme;
     final AppLocalizations translations = AppLocalizations.of(context)!;
     final TextStyle inputValueStyle =
@@ -207,30 +209,30 @@ class _FormView extends StatelessWidget {
               key: _formKey,
               child: Column(
                 children: <Widget>[
-                  FormBuilderTextField(
-                    style: inputValueStyle,
-                    autofocus: true,
-                    selectionHeightStyle: BoxHeightStyle.tight,
-                    selectionWidthStyle: BoxWidthStyle.tight,
-                    focusNode: _usernameFocusNode,
-                    onEditingComplete: () =>
-                        FocusScope.of(context).requestFocus(_emailFocusNode),
-                    textInputAction: TextInputAction.next,
-                    name: "username",
-                    cursorColor: _cursorColor,
-                    decoration: InputDecoration(
-                      labelText: translations.username,
-                      hintText: translations
-                          .placeholder(translations.username.toLowerCase()),
-                    ),
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(),
-                    ]),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                  ),
-                  SizedBox(
-                    height: _space,
-                  ),
+                  //FormBuilderTextField(
+                    //style: inputValueStyle,
+                    //autofocus: true,
+                    //selectionHeightStyle: BoxHeightStyle.tight,
+                    //selectionWidthStyle: BoxWidthStyle.tight,
+                    //focusNode: _usernameFocusNode,
+                    //onEditingComplete: () =>
+                      //  FocusScope.of(context).requestFocus(_emailFocusNode),
+                    //textInputAction: TextInputAction.next,
+                    //name: "username",
+                    //cursorColor: _cursorColor,
+                    //decoration: InputDecoration(
+                      //labelText: translations.username,
+                      //hintText: translations
+                        //  .placeholder(translations.username.toLowerCase()),
+                    //),
+                    //validator: FormBuilderValidators.compose([
+                      //FormBuilderValidators.required(),
+                    //]),
+                    //autovalidateMode: AutovalidateMode.onUserInteraction,
+                  //),
+                  //SizedBox(
+                    //height: _space,
+                  //),
                   FormBuilderTextField(
                     style: inputValueStyle,
                     focusNode: _emailFocusNode,

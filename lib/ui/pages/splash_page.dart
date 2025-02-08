@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'package:ourshop_ecommerce/ui/pages/pages.dart';
 
@@ -11,7 +9,6 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _downAnimation;
   late Animation<double> _downOpacity;
@@ -45,14 +42,16 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         percent.value += 1;
       } else {
         _timer?.cancel();
-        _navigateToChooseLanguagePage();
+        _navigateToLanguageSelection();
       }
     });
   }
-  void _navigateToChooseLanguagePage() {
-    locator<Preferences>().saveLastVisitedPage('splash_page');
-    context.go('/choose-language');
-  }
+/*Correcion para que siempre al iniciar la aplicacion se muestre la seccion idioma y moneda*/
+  void _navigateToLanguageSelection() {
+      context.go('/choose-language'); 
+}
+/*------------------------------------- */
+
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +68,11 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   offset: Offset(0, _downAnimation.value),
                   child: Opacity(
                     opacity: _downOpacity.value,
-                    child: child
+                    child: child,
                   ),
                 );
               },
-              child: Image.asset('assets/logos/logo_ourshop_1.png', width: 200, height: 200,)
+              child: Image.asset('assets/logos/logo_ourshop_1.png', width: 200, height: 200),
             ),
             ValueListenableBuilder(
               valueListenable: percent,
@@ -85,12 +84,12 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 );
               },
             ),
-            const SizedBox(height: 10.0,),
+            const SizedBox(height: 10.0),
             ValueListenableBuilder(
               valueListenable: percent,
               builder: (BuildContext context, value, _) {
                 if (_controller.isCompleted) {
-                  return Text('$value%', style: theme.textTheme.titleMedium,);
+                  return Text('$value%', style: theme.textTheme.titleMedium);
                 }
                 return const SizedBox();
               },

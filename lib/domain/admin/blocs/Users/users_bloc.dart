@@ -10,13 +10,30 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
   final SettingsBloc _settingsBloc;
   final GeneralBloc generalBloc;
   final StripeService _stripeService;
-
   UsersBloc(AuthService userServices, SettingsBloc settingsBloc,
       this.generalBloc, StripeService stripeService)
       : _userServices = userServices,
         _settingsBloc = settingsBloc,
         _stripeService = stripeService,
         super(const UsersState()) {
+/*añiadido para el inicio de sesion con apple */
+      on<LoginApple>((event, emit) async {
+        try {
+          emit(state.copyWith(status: UserStatus.loading));
+          final response = await _userServices.loginApple();
+          if (response is LoggedUser) {
+            emit(state.copyWith(
+            loggedUser: response,
+            status: UserStatus.logged,
+            ));
+          } else {
+            emit(state.copyWith(status: UserStatus.error));
+          }
+        } catch (e) {
+            emit(state.copyWith(status: UserStatus.error));
+        }
+        });
+
     on<Login>((event, emit) async {
       try {
         emit(state.copyWith(status: UserStatus.loading));
@@ -36,7 +53,6 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         emit(state.copyWith(status: UserStatus.error));
       }
     });
-
     on<LoginGoogle>((event, emit) async {
       try {
         emit(state.copyWith(status: UserStatus.loading));
@@ -78,7 +94,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       try {
         emit(state.copyWith(status: UserStatus.registering));
         final NewUser newUser = NewUser(
-          username: event.data['username'],
+          username: event.data['email'],
           email: event.data['email'],
           password: event.data['password'],
           name: event.data['name'],
@@ -99,39 +115,12 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         emit(state.copyWith(status: UserStatus.error));
       }
     });
-
-    // Agrega el manejo del evento LoginApple
-    on<LoginApple>((event, emit) async {
-      try {
-        emit(state.copyWith(status: UserStatus.loading));
-
-        // Aquí puedes manejar la lógica de autenticación con Apple
-        final response = await _userServices.loginApple(event.data);
-
-        if (response is LoggedUser) {
-          emit(state.copyWith(
-            loggedUser: response,
-            status: UserStatus.logged,
-          ));
-        } else {
-          emit(state.copyWith(status: UserStatus.error));
-        }
-      } catch (e) {
-        emit(state.copyWith(status: UserStatus.error));
-      } finally {
-        emit(state.copyWith(status: UserStatus.initial));
-      }
-    });
-
     on<AddPaymentMethodsEvent>(
         (event, emit) => emit(state.copyWith(cards: event.cards)));
-
     on<AddPaymentMethodEvent>((event, emit) =>
         emit(state.copyWith(cards: List.from(state.cards)..add(event.card))));
-
     on<RemovePaymentMethodEvent>((event, emit) => emit(
         state.copyWith(cards: List.from(state.cards)..remove(event.card))));
-
     on<AddSelectedCardEvent>(
         (event, emit) => emit(state.copyWith(selectedCard: event.card)));
 
